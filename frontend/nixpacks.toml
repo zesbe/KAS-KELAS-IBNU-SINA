@@ -1,5 +1,6 @@
 [phases.setup]
 nixPkgs = ["nodejs-18_x", "npm-9_x"]
+cmds = ["node ../scripts/create-app-dir.js || true"]
 
 [phases.install]
 cmds = ["npm ci"]

@@ -1,11 +1,8 @@
 # Use Node.js 18 Alpine image
 FROM node:18-alpine
 
-# Set working directory - using backend as working dir
-WORKDIR /backend
-
-# Create symlink for compatibility
-RUN ln -s /backend /app
+# Set working directory
+WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
