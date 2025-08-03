@@ -1,8 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
-import { validateEnv } from './env-check';
+import { env, validateEnv } from '../config/env';
 
 // Validate environment variables
-const env = validateEnv();
+validateEnv();
 
 const supabaseUrl = env.REACT_APP_SUPABASE_URL;
 const supabaseAnonKey = env.REACT_APP_SUPABASE_ANON_KEY;

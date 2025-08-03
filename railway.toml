@@ -1,18 +1,28 @@
 [build]
 builder = "nixpacks"
-buildCommand = "npm install --workspaces"
+buildCommand = "cd frontend && npm ci && npm run build"
 
 [deploy]
-startCommand = "echo 'This is a monorepo. Deploy frontend or backend separately.'"
+startCommand = "cd frontend && npm run serve"
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 10
 
 [[services]]
 name = "frontend"
 rootDirectory = "frontend"
-buildCommand = "npm ci && ./scripts/build.sh"
+
+[services.frontend.build]
+buildCommand = "npm ci && npm run build"
+
+[services.frontend.deploy]
 startCommand = "npm run serve"
 
 [[services]]
 name = "backend"
-rootDirectory = "backend"  
+rootDirectory = "backend"
+
+[services.backend.build]
 buildCommand = "npm ci"
-startCommand = "node server.js"
+
+[services.backend.deploy]
+startCommand = "npm start"

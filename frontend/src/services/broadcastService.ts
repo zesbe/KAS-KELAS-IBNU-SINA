@@ -3,9 +3,13 @@ import { transactionService } from './transactionService';
 import { pakasirService } from './pakasirService';
 import { Student, PaymentType, Transaction } from '../types';
 import axios from 'axios';
+import { env } from '../config/env';
 
-// Get backend URL from environment or use default
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3001';
+interface BroadcastPayload {
+  message: string;
+}
+
+const BACKEND_URL = env.REACT_APP_BACKEND_URL || 'http://localhost:3001';
 
 // Helper function to get auth headers
 async function getAuthHeaders() {

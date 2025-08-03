@@ -1,9 +1,10 @@
 import axios from 'axios';
-import { PakasirWebhookPayload } from '../types';
+import { PakasirResponse } from '../types';
+import { env } from '../config/env';
 
 const PAKASIR_BASE_URL = 'https://pakasir.zone.id';
-const PAKASIR_SLUG = process.env.REACT_APP_PAKASIR_SLUG!;
-const PAKASIR_API_KEY = process.env.REACT_APP_PAKASIR_API_KEY!;
+const PAKASIR_SLUG = env.REACT_APP_PAKASIR_SLUG;
+const PAKASIR_API_KEY = env.REACT_APP_PAKASIR_API_KEY;
 
 export const pakasirService = {
   generatePaymentUrl(orderId: string, amount: number): string {
@@ -19,7 +20,7 @@ export const pakasirService = {
     return `${PAKASIR_BASE_URL}/pay/${PAKASIR_SLUG}/${amount}?${params.toString()}`;
   },
 
-  async checkTransactionStatus(orderId: string, amount: number): Promise<PakasirWebhookPayload | null> {
+  async checkTransactionStatus(orderId: string, amount: number): Promise<PakasirResponse | null> {
     try {
       const params = new URLSearchParams({
         project: PAKASIR_SLUG,
@@ -43,7 +44,7 @@ export const pakasirService = {
     }
   },
 
-  validateWebhookPayload(payload: PakasirWebhookPayload, expectedAmount: number, expectedOrderId: string): boolean {
+  validateWebhookPayload(payload: PakasirResponse, expectedAmount: number, expectedOrderId: string): boolean {
     return payload.amount === expectedAmount && 
            payload.order_id === expectedOrderId && 
            payload.project === PAKASIR_SLUG;
