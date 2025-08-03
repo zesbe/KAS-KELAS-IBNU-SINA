@@ -1,0 +1,22 @@
+{
+  "name": "expense-tracker-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "install:all": "npm install",
+    "build:frontend": "cd frontend && npm run build",
+    "build:backend": "cd backend && npm ci",
+    "build": "npm run build:frontend",
+    "start:frontend": "cd frontend && serve -s build -l ${PORT:-3000}",
+    "start:backend": "cd backend && node server.js",
+    "start": "npm run start:frontend"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}
