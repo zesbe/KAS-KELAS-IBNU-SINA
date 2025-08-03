@@ -1,9 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const { addToQueue, getQueueStatus, getJobStatus } = require('../services/messageQueue');
+const { verifyToken, requireAdmin } = require('../middleware/auth');
 
 // Send broadcast messages with configurable delay
-router.post('/send', async (req, res) => {
+// Protected route - requires authentication
+router.post('/send', verifyToken, async (req, res) => {
   try {
     const { 
       messages, 
@@ -98,7 +100,8 @@ router.post('/send', async (req, res) => {
 });
 
 // Get queue status
-router.get('/status', async (req, res) => {
+// Protected route - requires authentication
+router.get('/status', verifyToken, async (req, res) => {
   try {
     const status = await getQueueStatus();
     res.json({
@@ -116,7 +119,7 @@ router.get('/status', async (req, res) => {
 });
 
 // Get job status
-router.get('/status/:jobId', async (req, res) => {
+router.get('/status/:jobId', verifyToken, async (req, res) => {
   try {
     const { jobId } = req.params;
     const status = await getJobStatus(jobId);
@@ -143,7 +146,7 @@ router.get('/status/:jobId', async (req, res) => {
 });
 
 // Get broadcast history
-router.get('/history', async (req, res) => {
+router.get('/history', verifyToken, async (req, res) => {
   try {
     const supabase = req.app.locals.supabase;
     const { limit = 50 } = req.query;

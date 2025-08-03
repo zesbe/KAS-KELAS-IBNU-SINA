@@ -7,6 +7,20 @@ import axios from 'axios';
 // Get backend URL from environment or use default
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3001';
 
+// Helper function to get auth headers
+async function getAuthHeaders() {
+  const { data: { session } } = await supabase.auth.getSession();
+  
+  if (!session?.access_token) {
+    throw new Error('No authentication token available');
+  }
+  
+  return {
+    'Authorization': `Bearer ${session.access_token}`,
+    'Content-Type': 'application/json'
+  };
+}
+
 export interface BroadcastPayment {
   student_id: string;
   student_name: string;
@@ -148,6 +162,8 @@ export const broadcastService = {
         delaySeconds: options.delaySeconds || 10, // Default 10 seconds
         messageTemplate,
         paymentTypeId: options.paymentTypeId
+      }, {
+        headers: await getAuthHeaders()
       });
 
       return {
@@ -166,7 +182,9 @@ export const broadcastService = {
   // Get broadcast status from backend
   async getBroadcastStatus(): Promise<any> {
     try {
-      const response = await axios.get(`${BACKEND_URL}/api/broadcast/status`);
+      const response = await axios.get(`${BACKEND_URL}/api/broadcast/status`, {
+      headers: await getAuthHeaders()
+    });
       return response.data.status;
     } catch (error) {
       console.error('Failed to get broadcast status:', error);
@@ -177,7 +195,9 @@ export const broadcastService = {
   // Get job status from backend
   async getJobStatus(jobId: string): Promise<any> {
     try {
-      const response = await axios.get(`${BACKEND_URL}/api/broadcast/status/${jobId}`);
+      const response = await axios.get(`${BACKEND_URL}/api/broadcast/status/${jobId}`, {
+      headers: await getAuthHeaders()
+    });
       return response.data.job;
     } catch (error) {
       console.error('Failed to get job status:', error);
@@ -188,9 +208,10 @@ export const broadcastService = {
   // Get broadcast history
   async getBroadcastHistory(limit = 50): Promise<any[]> {
     try {
-      const response = await axios.get(`${BACKEND_URL}/api/broadcast/history`, {
-        params: { limit }
-      });
+          const response = await axios.get(`${BACKEND_URL}/api/broadcast/history`, {
+      params: { limit },
+      headers: await getAuthHeaders()
+    });
       return response.data.data || [];
     } catch (error) {
       console.error('Failed to get broadcast history:', error);
@@ -236,6 +257,8 @@ export const broadcastService = {
       const response = await axios.post(`${BACKEND_URL}/api/broadcast/send`, {
         messages,
         delaySeconds
+      }, {
+        headers: await getAuthHeaders()
       });
 
       return {

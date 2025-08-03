@@ -9,6 +9,7 @@ const webhookRoutes = require('./routes/webhook');
 const broadcastRoutes = require('./routes/broadcast');
 const cronRoutes = require('./routes/cron');
 const healthRoutes = require('./routes/health');
+const authTestRoutes = require('./routes/auth-test');
 
 // Import queue processor
 require('./services/messageQueue');
@@ -63,7 +64,8 @@ app.locals.supabase = supabase;
 app.use('/api/webhook', webhookRoutes);
 app.use('/api/broadcast', broadcastRoutes);
 app.use('/api/cron', cronRoutes);
-app.use('/health', healthRoutes);
+app.use('/api/health', healthRoutes);
+app.use('/api/auth-test', authTestRoutes);
 
 // Root endpoint
 app.get('/', (req, res) => {
