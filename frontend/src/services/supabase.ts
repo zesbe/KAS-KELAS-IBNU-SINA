@@ -1,22 +1,22 @@
-import { createClient } from '@supabase/supabase-js';
-import { env, validateEnv } from '../config/env';
+import { createClient } from '@supabase/supabase-js'
 
-// Validate environment variables
-validateEnv();
+const supabaseUrl = process.env.REACT_APP_SUPABASE_URL?.trim()
+const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY?.trim()
 
-const supabaseUrl = env.REACT_APP_SUPABASE_URL;
-const supabaseAnonKey = env.REACT_APP_SUPABASE_ANON_KEY;
-
-// Add validation to check if environment variables are loaded
-if (!supabaseUrl || supabaseUrl === 'undefined') {
-  console.error('REACT_APP_SUPABASE_URL is not defined. Please check your environment variables.');
-  console.error('Current value:', process.env.REACT_APP_SUPABASE_URL);
-  throw new Error('supabaseUrl is required.');
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.error('❌ Supabase environment variables missing:')
+  console.error('REACT_APP_SUPABASE_URL:', supabaseUrl ? '✓ Set' : '✗ Missing')
+  console.error('REACT_APP_SUPABASE_ANON_KEY:', supabaseAnonKey ? '✓ Set' : '✗ Missing')
+  throw new Error('Supabase configuration is required')
 }
 
-if (!supabaseAnonKey || supabaseAnonKey === 'undefined') {
-  console.error('REACT_APP_SUPABASE_ANON_KEY is not defined. Please check your environment variables.');
-  throw new Error('supabaseAnonKey is required.');
+// Validate URL format
+try {
+  new URL(supabaseUrl)
+} catch (error) {
+  console.error('❌ Invalid Supabase URL:', supabaseUrl)
+  throw new Error('Invalid Supabase URL format')
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+console.log('✅ Supabase configuration loaded successfully')
+export const supabase = createClient(supabaseUrl, supabaseAnonKey)
