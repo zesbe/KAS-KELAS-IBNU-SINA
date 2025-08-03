@@ -1,3 +1,5 @@
+import { env } from '../config/env';
+
 export interface PushSubscription {
   endpoint: string;
   keys: {
@@ -51,8 +53,11 @@ class PWAService {
     }
 
     try {
-      // Public VAPID key (this should be from your server)
-      const vapidPublicKey = process.env.REACT_APP_VAPID_PUBLIC_KEY || '';
+      // Convert the public key
+      const vapidPublicKey = env.REACT_APP_VAPID_PUBLIC_KEY || '';
+      if (!vapidPublicKey) {
+        throw new Error('VAPID public key not found');
+      }
       const convertedVapidKey = this.urlBase64ToUint8Array(vapidPublicKey);
 
       const subscription = await this.registration.pushManager.subscribe({

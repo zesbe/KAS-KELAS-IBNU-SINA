@@ -1,9 +1,11 @@
 import axios from 'axios';
 import { DripsenderResponse, WhatsappLog } from '../types';
 import { supabase } from './supabase';
+import { Student } from '../types';
+import { env } from '../config/env';
 
 const DRIPSENDER_API_URL = 'https://api.dripsender.id';
-const DRIPSENDER_API_KEY = process.env.REACT_APP_DRIPSENDER_API_KEY!;
+const DRIPSENDER_API_KEY = env.REACT_APP_DRIPSENDER_API_KEY;
 
 export const whatsappService = {
   async sendMessage(phoneNumber: string, message: string, fileUrl?: string): Promise<boolean> {
