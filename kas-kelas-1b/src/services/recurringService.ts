@@ -198,9 +198,7 @@ export const recurringService = {
       // Send WhatsApp
       await whatsappService.sendMessage(
         transaction.student.parent_phone,
-        message,
-        transaction.student_id,
-        transaction.id
+        message
       );
 
       // Update reminder status

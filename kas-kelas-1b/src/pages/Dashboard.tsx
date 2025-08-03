@@ -90,7 +90,9 @@ const Dashboard: React.FC = () => {
       color: 'bg-blue-500',
       lightColor: 'bg-blue-100',
       textColor: 'text-blue-600',
-      subValue: `Pemasukan: ${formatCurrency(totalRevenue)}`
+      subValue: `Pemasukan: ${formatCurrency(totalRevenue)}`,
+      change: revenueGrowth,
+      changeType: revenueGrowth >= 0 ? 'increase' as const : 'decrease' as const
     },
     {
       name: 'Total Pengeluaran',
@@ -103,7 +105,7 @@ const Dashboard: React.FC = () => {
     },
     {
       name: 'Pembayaran Pending',
-      value: pendingTransactions.length,
+      value: pendingTransactions.length.toString(),
       icon: Clock,
       color: 'bg-yellow-500',
       lightColor: 'bg-yellow-100',
@@ -116,7 +118,8 @@ const Dashboard: React.FC = () => {
       icon: TrendingUp,
       color: 'bg-purple-500',
       lightColor: 'bg-purple-100',
-      textColor: 'text-purple-600'
+      textColor: 'text-purple-600',
+      subValue: undefined
     }
   ];
 
@@ -148,7 +151,7 @@ const Dashboard: React.FC = () => {
                   <p className="mt-1 text-sm text-gray-500">{stat.subValue}</p>
                 )}
                 
-                {stat.change !== undefined && (
+                {'change' in stat && stat.change !== undefined && (
                   <div className="mt-2 flex items-center text-sm">
                     {stat.changeType === 'increase' ? (
                       <ArrowUpRight className="h-4 w-4 text-green-500 mr-1" />
