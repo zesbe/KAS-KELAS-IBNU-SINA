@@ -10,7 +10,7 @@
     ]
   },
   "deploy": {
-    "startCommand": "npm run serve",
+    "startCommand": "npm run preserve && npm run serve",
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10,
     "healthcheckPath": "/",

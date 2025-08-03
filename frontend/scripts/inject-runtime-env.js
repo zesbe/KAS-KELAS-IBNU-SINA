@@ -21,6 +21,9 @@ const env = Object.keys(process.env)
     return acc;
   }, {});
 
+// Log what we found
+console.log('🔍 Found environment variables:', Object.keys(env).length > 0 ? Object.keys(env) : 'None');
+
 // Create the runtime config script
 const runtimeConfig = `
 window._env_ = ${JSON.stringify(env)};
@@ -30,8 +33,9 @@ window._env_ = ${JSON.stringify(env)};
 const indexPath = path.join(__dirname, '..', 'build', 'index.html');
 
 if (!fs.existsSync(indexPath)) {
-  console.error('❌ build/index.html not found. Make sure to run this after building.');
-  process.exit(1);
+  console.warn('⚠️  build/index.html not found. This is expected during build phase.');
+  // Don't exit with error during build phase
+  process.exit(0);
 }
 
 // Read the index.html file
@@ -39,8 +43,9 @@ let indexHtml = fs.readFileSync(indexPath, 'utf8');
 
 // Check if runtime config already exists
 if (indexHtml.includes('window._env_')) {
-  console.log('⚠️  Runtime config already injected, skipping...');
-  process.exit(0);
+  console.log('⚠️  Runtime config already injected, updating...');
+  // Remove existing config
+  indexHtml = indexHtml.replace(/<script>[\s\S]*?window\._env_[\s\S]*?<\/script>/g, '');
 }
 
 // Inject the runtime config before the closing </head> tag

@@ -10,6 +10,9 @@ export const ENV = {
   REACT_APP_VAPID_PUBLIC_KEY: env.VAPID_PUBLIC_KEY || ''
 }
 
+// Export as 'env' for backward compatibility
+export { ENV as env }
+
 // Check if we're in production
 const isProduction = process.env.NODE_ENV === 'production';
 
