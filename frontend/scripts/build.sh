@@ -1,26 +1,42 @@
 #!/bin/bash
 
-# Build script for Railway deployment
-# This ensures environment variables are available during build time
+# Build script for frontend with environment validation
 
-echo "Starting build process..."
-echo "Checking environment variables..."
+echo "🔍 Checking environment variables..."
 
-# Check if required environment variables are set
-if [ -z "$REACT_APP_SUPABASE_URL" ]; then
-    echo "ERROR: REACT_APP_SUPABASE_URL is not set!"
-    exit 1
+# Required environment variables
+required_vars=(
+  "REACT_APP_SUPABASE_URL"
+  "REACT_APP_SUPABASE_ANON_KEY"
+  "REACT_APP_BACKEND_URL"
+  "REACT_APP_DRIPSENDER_API_KEY"
+  "REACT_APP_PAKASIR_API_KEY"
+  "REACT_APP_PAKASIR_SLUG"
+  "REACT_APP_VAPID_PUBLIC_KEY"
+)
+
+# Check each required variable
+missing_vars=()
+for var in "${required_vars[@]}"; do
+  if [ -z "${!var}" ]; then
+    missing_vars+=("$var")
+    echo "❌ $var is not set"
+  else
+    echo "✅ $var is set"
+  fi
+done
+
+# If any variables are missing, exit with error
+if [ ${#missing_vars[@]} -ne 0 ]; then
+  echo "❌ Missing required environment variables: ${missing_vars[*]}"
+  echo "Please set all required environment variables in Railway dashboard"
+  exit 1
 fi
 
-if [ -z "$REACT_APP_SUPABASE_ANON_KEY" ]; then
-    echo "ERROR: REACT_APP_SUPABASE_ANON_KEY is not set!"
-    exit 1
-fi
-
-echo "REACT_APP_SUPABASE_URL is set to: ${REACT_APP_SUPABASE_URL:0:20}..."
-echo "REACT_APP_SUPABASE_ANON_KEY is set: ${REACT_APP_SUPABASE_ANON_KEY:0:20}..."
+echo "✅ All environment variables are set"
+echo "🏗️ Building frontend..."
 
 # Run the actual build
 npm run build
 
-echo "Build completed!"
+echo "✅ Build completed successfully"

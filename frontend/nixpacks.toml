@@ -12,3 +12,7 @@ cmd = "npm run serve"
 
 [variables]
 NODE_ENV = "production"
+
+# Ensure environment variables are available during build
+[phases.build.cache_directories]
+paths = [".next/cache", "node_modules/.cache"]

@@ -9,6 +9,9 @@ export const env = {
   REACT_APP_VAPID_PUBLIC_KEY: process.env.REACT_APP_VAPID_PUBLIC_KEY || ''
 };
 
+// Check if we're in production
+const isProduction = process.env.NODE_ENV === 'production';
+
 // Validate environment variables
 export function validateEnv() {
   const requiredVars = [
@@ -40,7 +43,13 @@ export function validateEnv() {
       REACT_APP_PAKASIR_SLUG: env.REACT_APP_PAKASIR_SLUG ? 'SET' : 'NOT SET',
       REACT_APP_VAPID_PUBLIC_KEY: env.REACT_APP_VAPID_PUBLIC_KEY ? 'SET' : 'NOT SET'
     });
-    throw new Error(`Missing required environment variables: ${missingVars.join(', ')}`);
+    
+    // Only throw error in production
+    if (isProduction) {
+      throw new Error(`Missing required environment variables: ${missingVars.join(', ')}`);
+    } else {
+      console.warn('Running in development mode with missing environment variables');
+    }
   }
 
   return env;

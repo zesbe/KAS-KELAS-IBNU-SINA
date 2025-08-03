@@ -7,6 +7,10 @@ startCommand = "cd frontend && npm run serve"
 restartPolicyType = "on_failure"
 restartPolicyMaxRetries = 10
 
+# Environment variable configuration
+[env]
+NODE_ENV = "production"
+
 [[services]]
 name = "frontend"
 rootDirectory = "frontend"
