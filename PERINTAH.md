@@ -1,4 +1,4 @@
-Saya ingin dibuatkan aplikasi web untuk manajemen kas kelas SD Islam Al Husna (tahun ajaran 2025/2026) kelas 1B, berbasis React + Tailwind dan terintegrasi full dengan Supabase, terintegrasi Whatsap gateway dripsender, terintegrasi dengan pakasir fan semua serba otomatis.
+Saya ingin dibuatkan aplikasi web untuk manajemen kas kelas SD Islam Al Husna (tahun ajaran 2025/2026) kelas 1B, berbasis React + Tailwind dan terintegrasi full dengan Supabase, terintegrasi Whatsap gateway dripsender, terintegrasi dengan pakasir dan semua serba otomatis.
 saya lampirkan beberapa dokumentas:
 
 dokumentasi dari pakasir :
