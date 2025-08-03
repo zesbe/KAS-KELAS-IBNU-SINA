@@ -8,7 +8,7 @@ startCommand = "echo 'This is a monorepo. Deploy frontend or backend separately.
 [[services]]
 name = "frontend"
 rootDirectory = "frontend"
-buildCommand = "npm ci && npm run build"
+buildCommand = "npm ci && ./scripts/build.sh"
 startCommand = "npm run serve"
 
 [[services]]
