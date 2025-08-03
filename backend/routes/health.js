@@ -27,8 +27,11 @@ router.get('/', async (req, res) => {
     if (process.env.REDIS_HOST) {
       try {
         const { messageQueue } = require('../services/messageQueue');
-        await messageQueue.isReady();
-        health.services.redis = 'UP';
+        if (messageQueue && await messageQueue.isReady()) {
+          health.services.redis = 'UP';
+        } else {
+          health.services.redis = 'DOWN';
+        }
       } catch (err) {
         health.services.redis = 'DOWN';
       }
