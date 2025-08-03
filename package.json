@@ -7,13 +7,18 @@
     "backend"
   ],
   "scripts": {
-    "install:all": "npm install",
-    "build:frontend": "cd frontend && npm run build",
-    "build:backend": "cd backend && npm ci",
+    "install:all": "npm install --workspaces",
+    "install:frontend": "npm install --workspace=frontend",
+    "install:backend": "npm install --workspace=backend",
+    "build:frontend": "npm run build --workspace=frontend",
+    "build:backend": "npm run build --workspace=backend 2>/dev/null || true",
     "build": "npm run build:frontend",
-    "start:frontend": "cd frontend && serve -s build -l ${PORT:-3000}",
-    "start:backend": "cd backend && node server.js",
-    "start": "npm run start:frontend"
+    "start:frontend": "npm run serve --workspace=frontend",
+    "start:backend": "npm run start --workspace=backend",
+    "start": "npm run start:frontend",
+    "dev:frontend": "npm run start --workspace=frontend",
+    "dev:backend": "npm run dev --workspace=backend",
+    "postinstall": "echo 'Dependencies installed successfully'"
   },
   "engines": {
     "node": ">=18.0.0",
