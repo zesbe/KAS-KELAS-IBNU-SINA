@@ -17,7 +17,22 @@ export const transactionService = {
     return data || [];
   },
 
-  async getByStudentId(studentId: string): Promise<Transaction[]> {
+  async getByStatus(status: string): Promise<Transaction[]> {
+    const { data, error } = await supabase
+      .from('transactions')
+      .select(`
+        *,
+        student:students(*),
+        payment_type:payment_types(*)
+      `)
+      .eq('status', status)
+      .order('created_at', { ascending: false });
+    
+    if (error) throw error;
+    return data || [];
+  },
+
+  async getByStudent(studentId: string): Promise<Transaction[]> {
     const { data, error } = await supabase
       .from('transactions')
       .select(`
@@ -32,6 +47,21 @@ export const transactionService = {
     return data || [];
   },
 
+  async getById(id: string): Promise<Transaction | null> {
+    const { data, error } = await supabase
+      .from('transactions')
+      .select(`
+        *,
+        student:students(*),
+        payment_type:payment_types(*)
+      `)
+      .eq('id', id)
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+
   async getByOrderId(orderId: string): Promise<Transaction | null> {
     const { data, error } = await supabase
       .from('transactions')
@@ -43,7 +73,7 @@ export const transactionService = {
       .eq('order_id', orderId)
       .single();
     
-    if (error) throw error;
+    if (error && error.code !== 'PGRST116') throw error;
     return data;
   },
 
@@ -78,7 +108,7 @@ export const transactionService = {
     return data;
   },
 
-  async updateStatus(orderId: string, status: Transaction['status'], paymentMethod?: string): Promise<Transaction> {
+  async updateStatus(id: string, status: string, paymentMethod?: string): Promise<Transaction> {
     const updateData: any = { status };
     
     if (status === 'completed') {
@@ -91,7 +121,57 @@ export const transactionService = {
     const { data, error } = await supabase
       .from('transactions')
       .update(updateData)
+      .eq('id', id)
+      .select(`
+        *,
+        student:students(*),
+        payment_type:payment_types(*)
+      `)
+      .single();
+    
+    if (error) throw error;
+    
+    // Update daily balance if transaction is completed
+    if (status === 'completed' && data.completed_at) {
+      const completedDate = format(new Date(data.completed_at), 'yyyy-MM-dd');
+      await this.updateDailyBalance(completedDate);
+    }
+    
+    return data;
+  },
+
+  async updateByOrderId(orderId: string, updates: {
+    status?: string;
+    payment_method?: string;
+    completed_at?: string;
+  }): Promise<Transaction> {
+    const { data, error } = await supabase
+      .from('transactions')
+      .update(updates)
       .eq('order_id', orderId)
+      .select(`
+        *,
+        student:students(*),
+        payment_type:payment_types(*)
+      `)
+      .single();
+    
+    if (error) throw error;
+    
+    // Update daily balance if transaction is completed
+    if (updates.status === 'completed' && updates.completed_at) {
+      const completedDate = format(new Date(updates.completed_at), 'yyyy-MM-dd');
+      await this.updateDailyBalance(completedDate);
+    }
+    
+    return data;
+  },
+
+  async updatePaymentUrl(id: string, paymentUrl: string): Promise<Transaction> {
+    const { data, error } = await supabase
+      .from('transactions')
+      .update({ payment_url: paymentUrl })
+      .eq('id', id)
       .select(`
         *,
         student:students(*),
@@ -103,42 +183,35 @@ export const transactionService = {
     return data;
   },
 
-  async updatePaymentUrl(orderId: string, paymentUrl: string): Promise<void> {
+  async delete(id: string): Promise<void> {
     const { error } = await supabase
       .from('transactions')
-      .update({ payment_url: paymentUrl })
-      .eq('order_id', orderId);
+      .delete()
+      .eq('id', id);
     
     if (error) throw error;
   },
 
   async getPendingTransactions(): Promise<Transaction[]> {
-    const { data, error } = await supabase
-      .from('transactions')
-      .select(`
-        *,
-        student:students(*),
-        payment_type:payment_types(*)
-      `)
-      .eq('status', 'pending')
-      .order('created_at', { ascending: false });
-    
-    if (error) throw error;
-    return data || [];
+    return this.getByStatus('pending');
   },
 
   async getCompletedTransactions(): Promise<Transaction[]> {
-    const { data, error } = await supabase
-      .from('transactions')
-      .select(`
-        *,
-        student:students(*),
-        payment_type:payment_types(*)
-      `)
-      .eq('status', 'completed')
-      .order('completed_at', { ascending: false });
-    
-    if (error) throw error;
-    return data || [];
+    return this.getByStatus('completed');
+  },
+
+  // Helper function to update daily balance
+  async updateDailyBalance(date: string): Promise<void> {
+    try {
+      const { error } = await supabase.rpc('calculate_daily_balance', {
+        p_date: date
+      });
+      
+      if (error) {
+        console.error('Failed to update daily balance:', error);
+      }
+    } catch (err) {
+      console.error('Error updating daily balance:', err);
+    }
   }
 };

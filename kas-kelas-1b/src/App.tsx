@@ -9,6 +9,7 @@ import Students from './pages/Students';
 import Transactions from './pages/Transactions';
 import Reports from './pages/Reports';
 import PaymentSuccess from './pages/PaymentSuccess';
+import Expenses from './pages/Expenses';
 
 // Protected Route Component
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -82,6 +83,15 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Transactions />
+                </ProtectedRoute>
+              }
+            />
+            
+            <Route
+              path="/expenses"
+              element={
+                <ProtectedRoute>
+                  <Expenses />
                 </ProtectedRoute>
               }
             />

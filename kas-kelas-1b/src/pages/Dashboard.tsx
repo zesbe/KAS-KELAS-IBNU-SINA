@@ -6,13 +6,16 @@ import {
   CheckCircle,
   Clock,
   ArrowUpRight,
-  ArrowDownRight
+  ArrowDownRight,
+  Wallet,
+  Receipt
 } from 'lucide-react';
 import { studentService } from '../services/studentService';
 import { transactionService } from '../services/transactionService';
 import { paymentTypeService } from '../services/paymentTypeService';
+import { expenseService } from '../services/expenseService';
 import { formatCurrency, formatDate } from '../utils/formatters';
-import { Transaction, Student, PaymentType } from '../types';
+import { Transaction, Student, PaymentType, Expense } from '../types';
 import toast from 'react-hot-toast';
 import { Link } from 'react-router-dom';
 
@@ -20,6 +23,8 @@ const Dashboard: React.FC = () => {
   const [students, setStudents] = useState<Student[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [paymentTypes, setPaymentTypes] = useState<PaymentType[]>([]);
+  const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [currentBalance, setCurrentBalance] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -28,15 +33,19 @@ const Dashboard: React.FC = () => {
 
   const loadData = async () => {
     try {
-      const [studentsData, transactionsData, paymentTypesData] = await Promise.all([
+      const [studentsData, transactionsData, paymentTypesData, expensesData, balance] = await Promise.all([
         studentService.getAll(),
         transactionService.getAll(),
-        paymentTypeService.getAll()
+        paymentTypeService.getAll(),
+        expenseService.getAllExpenses(),
+        expenseService.getCurrentBalance()
       ]);
 
       setStudents(studentsData);
       setTransactions(transactionsData);
       setPaymentTypes(paymentTypesData);
+      setExpenses(expensesData);
+      setCurrentBalance(balance);
     } catch (error) {
       toast.error('Gagal memuat data');
     } finally {
@@ -50,6 +59,10 @@ const Dashboard: React.FC = () => {
   const pendingTransactions = transactions.filter(t => t.status === 'pending');
   const totalRevenue = completedTransactions.reduce((sum, t) => sum + t.amount, 0);
   const pendingAmount = pendingTransactions.reduce((sum, t) => sum + t.amount, 0);
+  
+  // Expense statistics
+  const approvedExpenses = expenses.filter(e => e.approved);
+  const totalExpenses = approvedExpenses.reduce((sum, e) => sum + e.amount, 0);
 
   // Get recent transactions
   const recentTransactions = transactions.slice(0, 5);
@@ -71,22 +84,22 @@ const Dashboard: React.FC = () => {
 
   const stats = [
     {
-      name: 'Total Siswa',
-      value: totalStudents,
-      icon: Users,
+      name: 'Saldo Kas',
+      value: formatCurrency(currentBalance),
+      icon: Wallet,
       color: 'bg-blue-500',
       lightColor: 'bg-blue-100',
-      textColor: 'text-blue-600'
+      textColor: 'text-blue-600',
+      subValue: `Pemasukan: ${formatCurrency(totalRevenue)}`
     },
     {
-      name: 'Total Terkumpul',
-      value: formatCurrency(totalRevenue),
-      icon: DollarSign,
-      color: 'bg-green-500',
-      lightColor: 'bg-green-100',
-      textColor: 'text-green-600',
-      change: revenueGrowth,
-      changeType: revenueGrowth >= 0 ? 'increase' : 'decrease'
+      name: 'Total Pengeluaran',
+      value: formatCurrency(totalExpenses),
+      icon: Receipt,
+      color: 'bg-red-500',
+      lightColor: 'bg-red-100',
+      textColor: 'text-red-600',
+      subValue: `${approvedExpenses.length} transaksi`
     },
     {
       name: 'Pembayaran Pending',
@@ -155,6 +168,25 @@ const Dashboard: React.FC = () => {
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Cash Flow Summary */}
+      <div className="bg-white rounded-lg shadow p-6">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Ringkasan Arus Kas</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="text-center">
+            <p className="text-sm text-gray-600">Total Pemasukan</p>
+            <p className="text-2xl font-bold text-green-600">+{formatCurrency(totalRevenue)}</p>
+          </div>
+          <div className="text-center">
+            <p className="text-sm text-gray-600">Total Pengeluaran</p>
+            <p className="text-2xl font-bold text-red-600">-{formatCurrency(totalExpenses)}</p>
+          </div>
+          <div className="text-center">
+            <p className="text-sm text-gray-600">Saldo Akhir</p>
+            <p className="text-2xl font-bold text-blue-600">{formatCurrency(currentBalance)}</p>
+          </div>
+        </div>
       </div>
 
       {/* Recent Transactions and Quick Actions */}
@@ -273,10 +305,10 @@ const Dashboard: React.FC = () => {
                 Buat Transaksi Baru
               </Link>
               <Link
-                to="/reminders"
+                to="/expenses"
                 className="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
-                Kirim Pengingat
+                Catat Pengeluaran
               </Link>
               <Link
                 to="/reports"

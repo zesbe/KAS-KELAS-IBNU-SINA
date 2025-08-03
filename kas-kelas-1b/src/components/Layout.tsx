@@ -11,7 +11,8 @@ import {
   Menu,
   X,
   CreditCard,
-  BarChart3
+  BarChart3,
+  Receipt
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import toast from 'react-hot-toast';
@@ -31,6 +32,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     { name: 'Siswa', href: '/students', icon: Users },
     { name: 'Jenis Pembayaran', href: '/payment-types', icon: CreditCard },
     { name: 'Transaksi', href: '/transactions', icon: DollarSign },
+    { name: 'Pengeluaran', href: '/expenses', icon: Receipt },
     { name: 'Laporan', href: '/reports', icon: BarChart3 },
     { name: 'Pengingat', href: '/reminders', icon: Bell },
     { name: 'Riwayat WhatsApp', href: '/whatsapp-logs', icon: FileText },
