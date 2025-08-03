@@ -1,8 +1,11 @@
 import { supabase } from './supabase';
 import { transactionService } from './transactionService';
-import { whatsappService } from './whatsappService';
 import { pakasirService } from './pakasirService';
 import { Student, PaymentType, Transaction } from '../types';
+import axios from 'axios';
+
+// Get backend URL from environment or use default
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3001';
 
 export interface BroadcastPayment {
   student_id: string;
@@ -14,6 +17,12 @@ export interface BroadcastPayment {
   status: 'pending' | 'sent' | 'failed';
   whatsapp_sent_at?: string;
   error_message?: string;
+}
+
+export interface BroadcastOptions {
+  delaySeconds?: number; // Delay between messages in seconds
+  messageTemplate?: string;
+  paymentTypeId?: string;
 }
 
 export const broadcastService = {
@@ -114,111 +123,132 @@ export const broadcastService = {
     }
   },
 
-  // Send broadcast messages to all parents
+  // Send broadcast messages to all parents using backend API
   async sendBroadcastMessages(
     broadcastPayments: BroadcastPayment[],
-    messageTemplate: string
-  ): Promise<BroadcastPayment[]> {
-    const results: BroadcastPayment[] = [];
-    
-    for (const payment of broadcastPayments) {
-      if (payment.status === 'failed' || !payment.payment_url) {
-        results.push(payment);
-        continue;
-      }
-      
-      try {
-        // Replace placeholders in message template
-        const message = messageTemplate
-          .replace('{nama_siswa}', payment.student_name)
-          .replace('{jumlah}', payment.amount.toLocaleString('id-ID'))
-          .replace('{order_id}', payment.order_id)
-          .replace('{link_pembayaran}', payment.payment_url);
-        
-        // Send WhatsApp message
-        await whatsappService.sendMessage(
-          payment.parent_phone,
-          message,
-          payment.student_id
-        );
-        
-        results.push({
-          ...payment,
-          status: 'sent',
-          whatsapp_sent_at: new Date().toISOString()
-        });
-      } catch (error) {
-        console.error(`Failed to send WhatsApp to ${payment.parent_phone}:`, error);
-        results.push({
-          ...payment,
-          status: 'failed',
-          error_message: error instanceof Error ? error.message : 'Failed to send WhatsApp'
-        });
-      }
+    messageTemplate: string,
+    options: BroadcastOptions = {}
+  ): Promise<{ success: boolean; jobIds?: any[]; error?: string }> {
+    try {
+      const messages = broadcastPayments
+        .filter(payment => payment.status !== 'failed' && payment.payment_url)
+        .map(payment => ({
+          phoneNumber: payment.parent_phone,
+          studentId: payment.student_id,
+          studentName: payment.student_name,
+          amount: payment.amount,
+          orderId: payment.order_id,
+          paymentUrl: payment.payment_url,
+          message: messageTemplate
+        }));
+
+      // Send to backend API with configurable delay
+      const response = await axios.post(`${BACKEND_URL}/api/broadcast/send`, {
+        messages,
+        delaySeconds: options.delaySeconds || 10, // Default 10 seconds
+        messageTemplate,
+        paymentTypeId: options.paymentTypeId
+      });
+
+      return {
+        success: true,
+        jobIds: response.data.jobs
+      };
+    } catch (error) {
+      console.error('Failed to send broadcast messages:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to send messages'
+      };
     }
-    
-    return results;
+  },
+
+  // Get broadcast status from backend
+  async getBroadcastStatus(): Promise<any> {
+    try {
+      const response = await axios.get(`${BACKEND_URL}/api/broadcast/status`);
+      return response.data.status;
+    } catch (error) {
+      console.error('Failed to get broadcast status:', error);
+      return null;
+    }
+  },
+
+  // Get job status from backend
+  async getJobStatus(jobId: string): Promise<any> {
+    try {
+      const response = await axios.get(`${BACKEND_URL}/api/broadcast/status/${jobId}`);
+      return response.data.job;
+    } catch (error) {
+      console.error('Failed to get job status:', error);
+      return null;
+    }
   },
 
   // Get broadcast history
   async getBroadcastHistory(limit = 50): Promise<any[]> {
-    const { data, error } = await supabase
-      .from('whatsapp_logs')
-      .select(`
-        *,
-        student:students(name)
-      `)
-      .order('created_at', { ascending: false })
-      .limit(limit);
-    
-    if (error) throw error;
-    return data || [];
+    try {
+      const response = await axios.get(`${BACKEND_URL}/api/broadcast/history`, {
+        params: { limit }
+      });
+      return response.data.data || [];
+    } catch (error) {
+      console.error('Failed to get broadcast history:', error);
+      
+      // Fallback to direct Supabase query
+      const { data, error: dbError } = await supabase
+        .from('whatsapp_logs')
+        .select(`
+          *,
+          student:students(name)
+        `)
+        .order('created_at', { ascending: false })
+        .limit(limit);
+      
+      if (dbError) throw dbError;
+      return data || [];
+    }
   },
 
   // Create custom broadcast message
   async sendCustomBroadcast(
     studentIds: string[],
-    message: string
-  ): Promise<{ success: number; failed: number; results: any[] }> {
-    const results: any[] = [];
-    let success = 0;
-    let failed = 0;
-    
-    // Get students
-    const { data: students, error } = await supabase
-      .from('students')
-      .select('*')
-      .in('id', studentIds);
-    
-    if (error) throw error;
-    
-    for (const student of students || []) {
-      try {
-        await whatsappService.sendMessage(
-          student.parent_phone,
-          message,
-          student.id
-        );
-        
-        success++;
-        results.push({
-          student_id: student.id,
-          student_name: student.name,
-          status: 'sent',
-          sent_at: new Date().toISOString()
-        });
-      } catch (error) {
-        failed++;
-        results.push({
-          student_id: student.id,
-          student_name: student.name,
-          status: 'failed',
-          error: error instanceof Error ? error.message : 'Unknown error'
-        });
-      }
+    message: string,
+    delaySeconds: number = 10
+  ): Promise<{ success: boolean; jobIds?: any[]; error?: string }> {
+    try {
+      // Get students
+      const { data: students, error } = await supabase
+        .from('students')
+        .select('*')
+        .in('id', studentIds);
+      
+      if (error) throw error;
+      
+      const messages = (students || []).map(student => ({
+        phoneNumber: student.parent_phone,
+        studentId: student.id,
+        studentName: student.name,
+        message
+      }));
+
+      // Send to backend API
+      const response = await axios.post(`${BACKEND_URL}/api/broadcast/send`, {
+        messages,
+        delaySeconds
+      });
+
+      return {
+        success: true,
+        jobIds: response.data.jobs
+      };
+    } catch (error) {
+      console.error('Failed to send custom broadcast:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to send messages'
+      };
     }
-    
-    return { success, failed, results };
   },
 
   // Get message templates
