@@ -66,6 +66,15 @@ export interface PakasirWebhookPayload {
   completed_at: string;
 }
 
+export interface PakasirResponse {
+  amount: number;
+  order_id: string;
+  project: string;
+  status: string;
+  payment_method: string;
+  completed_at: string;
+}
+
 export interface DripsenderResponse {
   success: boolean;
   message: string;
