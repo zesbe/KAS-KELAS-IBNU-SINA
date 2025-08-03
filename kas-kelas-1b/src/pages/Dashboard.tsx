@@ -3,7 +3,6 @@ import {
   Users, 
   DollarSign, 
   TrendingUp, 
-  AlertCircle,
   CheckCircle,
   Clock,
   ArrowUpRight,

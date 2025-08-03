@@ -20,7 +20,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-hot-toast": "^2.4.1",
-    "react-router-dom": "^7.1.1",
+    "react-router-dom": "^6.26.1",
     "react-scripts": "5.0.1",
     "recharts": "^2.15.0",
     "serve": "^14.2.1",
@@ -51,5 +51,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.11"
   }
 }

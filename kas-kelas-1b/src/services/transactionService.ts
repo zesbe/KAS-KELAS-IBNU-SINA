@@ -52,8 +52,13 @@ export const transactionService = {
     payment_type_id: string;
     amount: number;
   }): Promise<Transaction> {
+    // Validate input
+    if (!transaction.student_id || !transaction.payment_type_id || transaction.amount <= 0) {
+      throw new Error('Invalid transaction data');
+    }
+    
     // Generate unique order ID
-    const orderId = `${format(new Date(), 'yyMMdd')}${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+    const orderId = `${format(new Date(), 'yyMMdd')}${Math.random().toString(36).substring(2, 11).toUpperCase()}`;
     
     const { data, error } = await supabase
       .from('transactions')

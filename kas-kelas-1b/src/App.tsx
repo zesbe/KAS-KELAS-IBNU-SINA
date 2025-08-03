@@ -8,6 +8,7 @@ import Dashboard from './pages/Dashboard';
 import Students from './pages/Students';
 import Transactions from './pages/Transactions';
 import Reports from './pages/Reports';
+import PaymentSuccess from './pages/PaymentSuccess';
 
 // Protected Route Component
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -56,6 +57,7 @@ function App() {
           
           <Routes>
             <Route path="/login" element={<Login />} />
+            <Route path="/payment-success" element={<PaymentSuccess />} />
             
             <Route
               path="/"

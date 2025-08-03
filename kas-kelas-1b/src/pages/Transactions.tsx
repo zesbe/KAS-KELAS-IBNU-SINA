@@ -8,10 +8,8 @@ import { whatsappService } from '../services/whatsappService';
 import { Transaction, Student, PaymentType } from '../types';
 import { formatCurrency, formatDateTime, getStatusBadgeClass } from '../utils/formatters';
 import toast from 'react-hot-toast';
-import { useNavigate } from 'react-router-dom';
 
 const Transactions: React.FC = () => {
-  const navigate = useNavigate();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [students, setStudents] = useState<Student[]>([]);
   const [paymentTypes, setPaymentTypes] = useState<PaymentType[]>([]);
