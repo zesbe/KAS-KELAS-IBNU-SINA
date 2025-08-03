@@ -3,13 +3,14 @@ builder = "nixpacks"
 buildCommand = "cd frontend && npm ci && npm run build"
 
 [deploy]
-startCommand = "cd frontend && npm run serve"
+startCommand = "cd frontend && npm run serve:production"
 restartPolicyType = "on_failure"
 restartPolicyMaxRetries = 10
 
 # Environment variable configuration
 [env]
 NODE_ENV = "production"
+PORT = "5000"
 
 [[services]]
 name = "frontend"
@@ -19,7 +20,7 @@ rootDirectory = "frontend"
 buildCommand = "npm ci && npm run build"
 
 [services.frontend.deploy]
-startCommand = "npm run serve"
+startCommand = "npm run serve:production"
 
 [[services]]
 name = "backend"
