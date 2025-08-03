@@ -3,18 +3,17 @@ FROM node:18-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files untuk root dan frontend
-COPY package*.json ./
-COPY frontend/package*.json ./frontend/
+# Copy frontend package files
+COPY frontend/package*.json ./
 
-# Install dependencies
-RUN npm install
+# Install frontend dependencies
+RUN npm ci
 
-# Copy semua source code
-COPY . .
+# Copy frontend source code
+COPY frontend/ ./
 
-# Build frontend
-RUN npm run build:frontend
+# Build the application
+RUN npm run build
 
 # Production stage
 FROM node:18-alpine
@@ -25,10 +24,10 @@ WORKDIR /app
 RUN npm install -g serve
 
 # Copy built application dari builder stage
-COPY --from=builder /app/frontend/build ./frontend/build
+COPY --from=builder /app/build ./build
 
 # Expose port
 EXPOSE 3000
 
 # Start the application
-CMD ["serve", "-s", "frontend/build", "-l", "3000"]
+CMD ["serve", "-s", "build", "-l", "3000"]
