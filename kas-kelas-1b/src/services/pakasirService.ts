@@ -4,14 +4,16 @@ import { PakasirWebhookPayload } from '../types';
 const PAKASIR_BASE_URL = 'https://pakasir.zone.id';
 const PAKASIR_SLUG = process.env.REACT_APP_PAKASIR_SLUG!;
 const PAKASIR_API_KEY = process.env.REACT_APP_PAKASIR_API_KEY!;
-const REDIRECT_URL = 'https://berbagiakun.com';
 
 export const pakasirService = {
   generatePaymentUrl(orderId: string, amount: number): string {
+    // Use current domain for redirect URL
+    const currentDomain = window.location.origin;
+    
     const params = new URLSearchParams({
       order_id: orderId,
       qris_only: '1',
-      redirect: `${REDIRECT_URL}/payment-success`
+      redirect: `${currentDomain}/payment-success`
     });
     
     return `${PAKASIR_BASE_URL}/pay/${PAKASIR_SLUG}/${amount}?${params.toString()}`;

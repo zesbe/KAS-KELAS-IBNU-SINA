@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const { createClient } = require('@supabase/supabase-js');
@@ -102,6 +103,17 @@ Admin Kas Kelas 1B`;
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
+});
+
+// Root endpoint
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'Kas Kelas 1B Backend Server',
+    endpoints: {
+      webhook: 'POST /api/webhook/pakasir',
+      health: 'GET /health'
+    }
+  });
 });
 
 app.listen(PORT, () => {
