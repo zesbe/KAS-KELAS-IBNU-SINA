@@ -11,6 +11,8 @@ import Reports from './pages/Reports';
 import PaymentSuccess from './pages/PaymentSuccess';
 import Expenses from './pages/Expenses';
 import Broadcast from './pages/Broadcast';
+import ParentPortal from './pages/ParentPortal';
+import Settings from './pages/Settings';
 
 // Protected Route Component
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -58,9 +60,12 @@ function App() {
           />
           
           <Routes>
+            {/* Public routes */}
             <Route path="/login" element={<Login />} />
             <Route path="/payment-success" element={<PaymentSuccess />} />
+            <Route path="/parent/:token" element={<ParentPortal />} />
             
+            {/* Protected routes */}
             <Route
               path="/"
               element={
@@ -115,6 +120,15 @@ function App() {
               }
             />
             
+            <Route
+              path="/settings"
+              element={
+                <ProtectedRoute>
+                  <Settings />
+                </ProtectedRoute>
+              }
+            />
+            
             {/* Placeholder routes for other pages */}
             <Route
               path="/payment-types"
@@ -146,18 +160,6 @@ function App() {
                 <ProtectedRoute>
                   <div className="text-center py-12">
                     <h1 className="text-2xl font-bold text-gray-900">Riwayat WhatsApp</h1>
-                    <p className="text-gray-600 mt-2">Halaman ini sedang dalam pengembangan</p>
-                  </div>
-                </ProtectedRoute>
-              }
-            />
-            
-            <Route
-              path="/settings"
-              element={
-                <ProtectedRoute>
-                  <div className="text-center py-12">
-                    <h1 className="text-2xl font-bold text-gray-900">Pengaturan</h1>
                     <p className="text-gray-600 mt-2">Halaman ini sedang dalam pengembangan</p>
                   </div>
                 </ProtectedRoute>
