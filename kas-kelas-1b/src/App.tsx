@@ -10,6 +10,7 @@ import Transactions from './pages/Transactions';
 import Reports from './pages/Reports';
 import PaymentSuccess from './pages/PaymentSuccess';
 import Expenses from './pages/Expenses';
+import Broadcast from './pages/Broadcast';
 
 // Protected Route Component
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -92,6 +93,15 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Expenses />
+                </ProtectedRoute>
+              }
+            />
+            
+            <Route
+              path="/broadcast"
+              element={
+                <ProtectedRoute>
+                  <Broadcast />
                 </ProtectedRoute>
               }
             />
