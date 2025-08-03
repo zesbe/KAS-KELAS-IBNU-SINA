@@ -78,3 +78,24 @@ GET https://api.dripsender.id/lists/:id
 Gunakan Endpoint ini untuk melihat contact dari list  whatsapp kamu di dripsender.id, ubah :id dengan list id kamu
 
 Dan ini api saya: bab6ad18-2ebb-42d7-98a4-2bdc141db4aa
+
+dan ini data orang tua siswa:
+1. Ibnu Sina Azma - +62 856-8500-062  
+2. Ibnu Sina Dizya - +62 812-8147-6276  
+3. Ibnu Sina Khalifa - +62 877-4168-6950  
+4. Ibnu Sina Kirana - +62 812-9759-7757  
+5. Ibnu Sina Mikha - +62 813-8241-6552  
+6. Ibnu Shina Shahia - +62 858-8163-6149  
+7. Ibnu Sina Abil - +62 812-1172-3429  
+8. Ibnu Sina Adiba - +62 813-2877-9423  
+9. Ibnu Sina Arkaan - +62 821-1475-9339  
+10. Ibnu Sina Atha - +62 812-9670-7505  
+11. Ibnu Sina Nafi M - +62 856-2468-7313  
+12. Ibnu Sina Nia - +62 812-9076-6367  
+13. Ibnu Sina Radefa - +62 811-9403-103  
+14. Ibnu Sina Saga K.A - +62 877-8539-3962  
+15. Ibnu Sina Sekar - +62 812-2595-0048  
+16. Ibnu Sina Shanum - +62 857-1663-5953  
+17. Ibnu Sina Sheila - +62 822-6021-8027  
+18. Ibnu Sina Yumna - +62 813-1007-5190  
+19. Ibnu Sina Zaidan - +62 813-1684-0991
