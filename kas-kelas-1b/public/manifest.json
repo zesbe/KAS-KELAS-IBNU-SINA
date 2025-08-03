@@ -1,0 +1,46 @@
+{
+  "short_name": "Kas Kelas 1B",
+  "name": "Sistem Kas Kelas 1B SD Islam Al Husna",
+  "description": "Aplikasi pengelolaan kas kelas dengan pembayaran online",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "logo192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "logo512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#2563eb",
+  "background_color": "#ffffff",
+  "orientation": "portrait",
+  "categories": ["education", "finance"],
+  "shortcuts": [
+    {
+      "name": "Broadcast Pembayaran",
+      "short_name": "Broadcast",
+      "description": "Kirim pengingat pembayaran",
+      "url": "/broadcast",
+      "icons": [{ "src": "/logo192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Laporan Keuangan",
+      "short_name": "Laporan",
+      "description": "Lihat laporan kas kelas",
+      "url": "/reports",
+      "icons": [{ "src": "/logo192.png", "sizes": "192x192" }]
+    }
+  ]
+}
